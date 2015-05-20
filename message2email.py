@@ -57,7 +57,7 @@ def messagepart():
     print(request)
     text = request.args.get(u"text", u"Not Sent").encode('utf-8')
     if request.args.get(u'concat') == u"true":
-        concat_total = request.args.get(u"contat-total")
+        concat_total = request.args.get(u"concat-total")
         print(u"Got a multipart message")
         send_sms_email(text, total_parts=concat_total)
     else:
