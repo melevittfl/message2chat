@@ -17,14 +17,20 @@ cache = pylibmc.Client(servers,
                        password=password)
 
 
-def send_sms_email(sms):
+def send_sms_email(sms, total_parts=None):
+    if total_parts:
+        subject_line = "One Time Token sent as {0} parts".format(total_parts)
+    else:
+        subject_line = "One Time Token sent as 1 part"
+
     email = PMMail(api_key=os.environ.get('POSTMARK_API_TOKEN'),
-                   subject="One Time Token",
+                   subject=subject_line,
                    sender="otptest@marklevitt.co.uk",
-                   to="markotpt@marklevitt.co.uk",
+                   to="levittm@visa.com",
                    text_body=sms)
     email.send()
     print("Email sent")
+
 
 def search_parts(list_of_parts, part_to_check):
     """
@@ -38,11 +44,13 @@ def search_parts(list_of_parts, part_to_check):
 def hello_world():
     return 'Hello World!'
 
+
 @app.route('/message', methods=['POST'])  # From Twilio.com
 def message():
     sms = request.form['Body']
     send_sms_email(sms)
     return """<?xml version="1.0" encoding="UTF-8"?><Response></Response>"""
+
 
 @app.route('/message2')  # From Nexmo.com
 def message2():
@@ -78,7 +86,7 @@ def message2():
 
                 print(sms_message)
                 cache.delete(concat_reference)
-                send_sms_email(sms_message)
+                send_sms_email(sms_message, total_parts=concat_total)
             else:
                 cache.set(concat_reference, sms_parts)
 
