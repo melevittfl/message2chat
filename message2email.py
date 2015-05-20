@@ -47,6 +47,7 @@ def hello_world():
 
 @app.route('/message', methods=['POST'])  # From Twilio.com
 def message():
+    print(request)
     sms = request.form['Body']
     send_sms_email(sms)
     return """<?xml version="1.0" encoding="UTF-8"?><Response></Response>"""
