@@ -65,6 +65,7 @@ def message2():
         concat_total = request.args.get("concat-total")
         concat_part = request.args.get("concat-part")
         text = request.args.get("text", "Not Sent")
+        print(text)
 
         sms_parts = cache.get(concat_reference)
         if sms_parts is not None:
