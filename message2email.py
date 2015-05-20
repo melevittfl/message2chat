@@ -58,8 +58,9 @@ def messagepart():
     text = request.args.get(u"text", u"Not Sent").encode('utf-8')
     if request.args.get(u'concat') == u"true":
         concat_total = request.args.get(u"concat-total")
+        concat_reference = request.args.get(u"concat-ref")
         print(u"Got a multipart message")
-        send_sms_email(text, total_parts=concat_total)
+        send_sms_email("[Nexmo Ref: {0}] ".format(concat_reference) + text, total_parts=concat_total)
     else:
         send_sms_email(text)
 
