@@ -19,14 +19,14 @@ cache = pylibmc.Client(servers,
 
 def send_sms_email(sms, total_parts=None):
     if total_parts:
-        subject_line = "One Time Token sent as {0} parts".format(total_parts)
+        subject_line = "BT SMS sent as {0} parts".format(total_parts)
     else:
-        subject_line = "One Time Token sent as 1 part"
+        subject_line = "BT SMS sent as 1 part"
 
     email = PMMail(api_key=os.environ.get('POSTMARK_API_TOKEN'),
                    subject=subject_line,
                    sender="otptest@marklevitt.co.uk",
-                   to="levittm@visa.com",
+                   to="asturg@visa.com",
                    text_body=sms)
     email.send()
     print("Email sent")
