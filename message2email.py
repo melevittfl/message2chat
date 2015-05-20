@@ -54,36 +54,37 @@ def message():
 
 @app.route('/message2')  # From Nexmo.com
 def message2():
-    if request.args.get('concat') == u"true":
+    print(request)
+    if request.args.get(u'concat') == u"true":
         """We have one part of a multipart message. We need to
          check the cache and see if we have another part already. If so,
          concatinate the parts and send the e-mail
          If not, store this message in the cache
         """
-        print("Got part of a multi-part message")
-        concat_reference = request.args.get("concat-ref")
-        concat_total = request.args.get("concat-total")
-        concat_part = request.args.get("concat-part")
-        text = request.args.get("text", "Not Sent")
-        print(text)
+        print(u"Got part of a multi-part message")
+        concat_reference = request.args.get(u"concat-ref")
+        concat_total = request.args.get(u"concat-total")
+        concat_part = request.args.get(u"concat-part")
+        text = request.args.get(u"text", u"Not Sent")
+        print(text.decoding('utf-8'))
 
         sms_parts = cache.get(concat_reference)
         if sms_parts is not None:
             """We've got an existing entry add this message"""
-            print("Found reference in the cache")
+            print(u"Found reference in the cache")
 
             if search_parts(sms_parts, concat_part):
-                print("Duplicate part received. Ignoring.")
-                return "<html><body>Duplicate Part</body></html>", 200
+                print(u"Duplicate part received. Ignoring.")
+                return u"<html><body>Duplicate Part</body></html>", 200
 
-            sms_parts.append({"part": concat_part, "text": text})
+            sms_parts.append({u"part": concat_part, u"text": text})
 
             if len(sms_parts) == int(concat_total):
                 """We've got all parts of the message"""
-                print("All parts arrived")
+                print(u"All parts arrived")
                 sms_message = ""
-                for part in sorted(sms_parts, key=itemgetter('part')):
-                    sms_message += part['text']
+                for part in sorted(sms_parts, key=itemgetter(u'part')):
+                    sms_message += part[u'text']
 
                 print(sms_message)
                 cache.delete(concat_reference)
@@ -92,14 +93,14 @@ def message2():
                 cache.set(concat_reference, sms_parts)
 
         else:
-            print("Cache entry not found")
-            sms_message_part = {"part": concat_part, "text": text}
+            print(u"Cache entry not found")
+            sms_message_part = {u"part": concat_part, u"text": text}
             sms_parts = [sms_message_part]
             cache.set(concat_reference, sms_parts)
     else:
-        send_sms_email(request.args.get('text'))
+        send_sms_email(request.args.get(u'text'))
 
-    return "<html><body>OK</body></html>", 200
+    return u"<html><body>OK</body></html>", 200
 
 if __name__ == '__main__':
     app.run()
