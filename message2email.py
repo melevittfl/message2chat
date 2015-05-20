@@ -52,6 +52,19 @@ def message():
     send_sms_email(sms)
     return """<?xml version="1.0" encoding="UTF-8"?><Response></Response>"""
 
+@app.route('/messagepart')
+def messagepart():
+    print(request)
+    text = request.args.get(u"text", u"Not Sent").encode('utf-8')
+    if request.args.get(u'concat') == u"true":
+        concat_total = request.args.get(u"contat-total")
+        print(u"Got a multipart message")
+        send_sms_email(text, total_parts=concat_total)
+    else:
+        send_sms_email(text)
+
+    return u"<html><body>OK</body></html>", 200
+
 
 @app.route('/message2')  # From Nexmo.com
 def message2():
