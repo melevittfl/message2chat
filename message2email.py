@@ -4,6 +4,7 @@ from operator import itemgetter
 import pylibmc
 import logging
 import requests
+import json
 
 
 logging.basicConfig(level=logging.INFO)
@@ -26,6 +27,11 @@ cache = pylibmc.Client(servers,
 
 chatbot_url = os.environ.get('CHATBOT_URL', None)
 
+nexmo_key = os.environ.get('NEXMO_API_KEY', None)
+nexmo_secret = os.environ.get('NEXMO_API_SECRET', None)
+nexmo_number = os.environ.get('NEXMO_NUMBER')
+
+
 
 def send_sms_email(sms, total_parts=None):
     pass
@@ -43,11 +49,24 @@ def send_sms_email(sms, total_parts=None):
     # print("Email sent")
 
 
-def get_bot_response(sms, total_parts=None):
+def get_bot_response(sms, number, total_parts=None):
     r = requests.post(chatbot_url, json={'message': sms})
     app.logger.debug(r.text)
 
-    
+    chat_reply = r.json()
+    app.logger.debug(chat_reply['reply'])
+
+    params = {
+        'api_key': nexmo_key,
+        'api_secret': nexmo_secret,
+        'to': number,
+        'from': nexmo_number,
+        'text': chat_reply['reply']
+    }
+
+    #requests.get()
+
+
 
 
 def search_parts(list_of_parts, part_to_check):
