@@ -30,7 +30,7 @@ chatbot_url = os.environ.get('CHATBOT_URL', None)
 nexmo_key = os.environ.get('NEXMO_API_KEY', None)
 nexmo_secret = os.environ.get('NEXMO_API_SECRET', None)
 nexmo_number = os.environ.get('NEXMO_NUMBER')
-
+nexmo_url = 'https://rest.nexmo.com/sms/json?'
 
 
 def send_sms_email(sms, total_parts=None):
@@ -64,7 +64,7 @@ def get_bot_response(sms, number, total_parts=None):
         'text': chat_reply['reply']
     }
 
-    #requests.get()
+    #requests.get(nexmo_url, params=params)
 
 
 
@@ -158,6 +158,8 @@ def messagepart():
 @app.route('/fdchat')  # From Nexmo.com
 def message2():
     app.logger.debug(request)
+
+    number = request.args.get(u"msisdn")
     if request.args.get(u'concat') == u"true":
         """We have one part of a multipart message. We need to
          check the cache and see if we have another part already. If so,
@@ -191,7 +193,7 @@ def message2():
 
                 print(sms_message)
                 cache.delete(concat_reference)
-                bot_reply = get_bot_response(sms_message, total_parts=concat_total)
+                get_bot_response(sms_message, number, total_parts=concat_total)
             else:
                 cache.set(concat_reference, sms_parts)
 
@@ -201,7 +203,7 @@ def message2():
             sms_parts = [sms_message_part]
             cache.set(concat_reference, sms_parts)
     else:
-        bot_reply = get_bot_response(request.args.get(u'text'))
+        get_bot_response(request.args.get(u'text'), number)
 
     return u"<html><body>OK</body></html>", 200
 
