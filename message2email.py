@@ -1,12 +1,9 @@
-from flask import Flask, request
+from flask import Flask, request, abort
 import os
 from operator import itemgetter
 import pylibmc
-import logging
 import requests
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 app.config['DEBUG'] = os.environ.get("DEBUG", "True")
@@ -58,6 +55,10 @@ def search_parts(list_of_parts, part_to_check):
 @app.route('/fdchat')  # From Nexmo.com
 def message2():
     app.logger.debug(request)
+
+    if (not request.args.get('to')) or (not request.args.get('msisdn')) or (not request.args.get('text')):
+        app.logger.debug("Received something that wasn't an sms")
+        abort(404)
 
     number = request.args.get(u"msisdn")
     if request.args.get(u'concat') == u"true":
