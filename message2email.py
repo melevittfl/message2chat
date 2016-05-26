@@ -44,7 +44,10 @@ def send_sms_email(sms, total_parts=None):
 
 
 def get_bot_response(sms, total_parts=None):
-    requests.post(chatbot_url, json={'message': sms})
+    r = requests.post(chatbot_url, json={'message': sms})
+    app.logger.debug(r.text)
+
+    
 
 
 def search_parts(list_of_parts, part_to_check):
