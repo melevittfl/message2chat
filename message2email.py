@@ -1,11 +1,14 @@
 from flask import Flask, request
 import os
-from postmark import PMMail
 from operator import itemgetter
 import pylibmc
 import logging
+import requests
+
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 
 app = Flask(__name__)
@@ -20,6 +23,8 @@ cache = pylibmc.Client(servers,
                        username=user,
                        password=password)
 
+
+chatbot_url = os.environ.get('CHATBOT_URL', None)
 
 
 def send_sms_email(sms, total_parts=None):
@@ -36,6 +41,10 @@ def send_sms_email(sms, total_parts=None):
     #                text_body=sms)
     # email.send()
     # print("Email sent")
+
+
+def get_bot_response(sms, total_parts=None):
+    requests.post(chatbot_url, json={'message': sms})
 
 
 def search_parts(list_of_parts, part_to_check):
@@ -160,7 +169,7 @@ def message2():
 
                 print(sms_message)
                 cache.delete(concat_reference)
-                send_sms_email(sms_message, total_parts=concat_total)
+                bot_reply = get_bot_response(sms_message, total_parts=concat_total)
             else:
                 cache.set(concat_reference, sms_parts)
 
@@ -170,7 +179,7 @@ def message2():
             sms_parts = [sms_message_part]
             cache.set(concat_reference, sms_parts)
     else:
-        send_sms_email(request.args.get(u'text'))
+        bot_reply = get_bot_response(request.args.get(u'text'))
 
     return u"<html><body>OK</body></html>", 200
 
