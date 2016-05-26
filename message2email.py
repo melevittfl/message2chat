@@ -64,7 +64,7 @@ def get_bot_response(sms, number, total_parts=None):
         'text': chat_reply['reply']
     }
 
-    #requests.get(nexmo_url, params=params)
+    requests.get(nexmo_url, params=params)
 
 
 
